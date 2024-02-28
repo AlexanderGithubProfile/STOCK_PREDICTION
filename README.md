@@ -23,10 +23,12 @@
 - **Дивидендная история**: Для каждой компании представлена история выплат дивидендов. Это позволяет анализировать дивидендную политику компании и прогнозы относительно будущих выплат.
 
   <div style="display: flex;">
-    <img src="img/exmp/4.png" width="400" height="200">
-    <img src="img/exmp/2.png" width="400" height="200">
-    <img src="img/exmp/3.png" width="500" height="250">
-    <img src="img/exmp/test.png" width="300" height="250">
+    <img src="img/exmp/test.png" width="400" height="250">
+    <img src="img/exmp/3.png" width="400" height="250"> 
+    <img src="img/exmp/4.png" width="800" height="400">
+    <img src="img/exmp/7.png" width="800" height="400">
+    <img src="img/exmp/8.png" width="800" height="400">
+    <img src="img/exmp/9.png" width="800" height="400">
 </div>
 
 ### Структура проекта:
