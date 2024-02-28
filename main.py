@@ -180,21 +180,21 @@ data.name = data.name.apply(str.upper)
 data.set_index('name', inplace=True)
 
 # Отображение DataFrame
-st.subheader('НАИБОЛЕЕ ВЛИЯЮЩИЕ НА ЦЕНУ КОМПАНИИ ПАРАМЕТРЫ')
-st.write('ПАРАМЕТРЫ РАСПОЛОЖЕНЫ ПО УБЫВАНИЮ ВАЖНОСТИ С ПОПРАВКОЙ НА ПРОГНОЗИРУЕМОСЬ')
+st.subheader('НАИБОЛЕЕ ЗНАЧИМЫЕ ФУНДАМЕНТАЛЬНЫЕ МЕТРИКИ')
+st.write('ПАРАМЕТРЫ РАСПОЛОЖЕНЫ ПО УБЫВАНИЮ ИХ КОРРЕЛЯЦИЯ С КАПИТАЛИЗАЦИЕЙ КОМПАНИИ И ИХ ПРОГНОЗИРУЕМОСТЬЮ')
 left, right = st.columns([1, 1])
 
 # График прогноза по росту
-fig1 = go.Figure()
-fig1.add_trace(
-    go.Bar(
-        x=data.reset_index().sort_values('%_change', ascending=True)['potential_yield_return'].iloc[:10],
-        y=data.reset_index().sort_values('%_change', ascending=True)['name'].iloc[:10],
-        orientation='h',
-        name='Прогнозный процент роста',
-        marker=dict(color='orange'),
-        )
-        )
+# fig1 = go.Figure()
+# fig1.add_trace(
+#     go.Bar(
+#         x=data.reset_index().sort_values('%_change', ascending=True)['potential_yield_return'].iloc[:10],
+#         y=data.reset_index().sort_values('%_change', ascending=True)['name'].iloc[:10],
+#         orientation='h',
+#         name='Прогнозный процент роста',
+#         marker=dict(color='orange'),
+#         )
+#         )
 # # График потенциального риска
 # fig1.add_trace(
 #     go.Bar(
@@ -206,15 +206,15 @@ fig1.add_trace(
 #     )
 # )
 
-fig1.update_layout(
-title='Прогнозный процент роста и Потенциальный риск',
-                    template='plotly_white',
-                    height=350,
-                    width=850,
-                    barmode='group'
-                    )
-fig1.update_xaxes(side='top')
-st.plotly_chart(fig1)
+# fig1.update_layout(
+# title='Прогнозный процент роста и Потенциальный риск',
+#                     template='plotly_white',
+#                     height=350,
+#                     width=850,
+#                     barmode='group'
+#                     )
+# fig1.update_xaxes(side='top')
+# st.plotly_chart(fig1)
 
 with right:
     st.write("")
