@@ -46,13 +46,12 @@
 - **requirements.txt**: Файл с необходимыми зависимостями
 ### Используемые технологии:
 
-- Python
-- BeautifulSoup для веб-скрейпинга
-- Pandas для обработки и анализа данных
-- Matplotlib и Seaborn для визуализации данных
-- Prophet для прогнозирования временных рядов
-- Streamlit для создания веб-приложения (если используется)
-
+- [Python](https://www.python.org/) для анализа данных и предобработки
+- [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) для веб-скрейпинга
+- [Pandas](https://pandas.pydata.org/) для обработки и анализа данных
+- [Matplotlib](https://matplotlib.org/) и [Seaborn](https://seaborn.pydata.org/) для визуализации данных
+- [Prophet](https://facebook.github.io/prophet/) для прогнозирования временных рядов
+- [Streamlit](https://streamlit.io/) для создания веб-приложения (если используется)
 
 ### Установка и запуск:
 1. Склонируйте репозиторий:
