@@ -20,7 +20,7 @@
   <div style="display: flex;">
     <img src="img/exmp/10.png" width="800" height="400">
     <img src="img/exmp/11.png" width="800" height="400">
-    <img src="img/exmp/12.png" width="800" height="400">
+    <img src="img/exmp/12.png" width="815" height="340">
 </div>
 
 ### Структура проекта:
