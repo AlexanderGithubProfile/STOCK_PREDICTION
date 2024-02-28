@@ -51,7 +51,7 @@
    - `requirements.txt`: Файл со списком зависимостей проекта.
    - `README.md`: Файл с описанием проекта, инструкциями по установке и использованию.
 
-
+### Используемые библиотеки
 - [Python](https://www.python.org/) для анализа данных и предобработки
 - [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) для веб-скрейпинга
 - [Pandas](https://pandas.pydata.org/) для обработки и анализа данных
