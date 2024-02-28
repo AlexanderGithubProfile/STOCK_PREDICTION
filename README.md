@@ -10,7 +10,7 @@
 - Данные прогноза объединяются в одну таблицу в формате CSV, предоставляя дополнительную информацию о предсказаниях цен акций.
 
   <div style="display: flex;">
-    <img src="img/exmp/1.png" width="400" height="200">
+    <img src="img/exmp/4.png" width="400" height="200">
     <img src="img/exmp/2.png" width="400" height="200">
     <img src="img/exmp/3.png" width="500" height="250">
     <img src="img/exmp/test.png" width="300" height="250">
