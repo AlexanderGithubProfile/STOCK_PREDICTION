@@ -14,10 +14,7 @@ st.set_page_config(layout="wide")
 st.sidebar.image(r'img\1.png', use_column_width=True)
 st.sidebar.image(r'img\11.png', use_column_width=True)
 
-# Заголовок
-st.subheader('ПРОГНОЗИРОВАНИЕ СТОИМОСТИ')
-
-# Загрузчик основных данных
+# Функция щагрузки основных данных
 def data_loader(TICKER):
     data = pd.read_csv(f'data\{TICKER.lower()}_h_2015-2024.csv', 
                             index_col='Unnamed: 0', 
@@ -35,17 +32,24 @@ def data_loader(TICKER):
                             index_col='Unnamed: 0')
     correlation_table = pd.read_csv(f'export\streamlit\{TICKER.lower()}_correlation_table.csv', 
                             index_col='Unnamed: 0')
-    return data, forecast, income, forcast_income, dividends, correlation_table
+    correlation_table.index = correlation_table.index.str.rstrip(', млрд. руб.')
+    correlation_table = correlation_table.iloc[:,:2] \
+                                    .rename(columns={'normalized_rmse':'RMSE_norm', 
+                                                     'Корреляция':'Чистая прибыль'}) \
+                                    .rename({'Операционный денежный поток':'Опер.ден.поток'})
+    
+    return data, forecast, income, forcast_income, dividends, correlation_table, sums_data, stock_list
 
 # Центральный график
 def plot_loader(TICKER, data):
     left, right = st.columns([3, 2])
+    # Значения доходностей рядом с графиком 
     with right:
         data_ = pd.read_csv('export/streamlit/00_sums_data.csv')
         data_.name = data_.name.apply(str.upper)
         data_.set_index('name', inplace=True)
 
-        # Значения доходностей рядом с графиком 
+        # Пронозная доходность 
         st.markdown(f"""<div style=' 
                             font-size: 20px;  
                             padding-left: 420px; 
@@ -55,6 +59,7 @@ def plot_loader(TICKER, data):
                             '>{int(data_.loc[TICKER]['%_change'] .round()):+d}%</span>
                             </div>""", 
                             unsafe_allow_html=True)
+        # Нижняя граница риска 
         st.markdown(f"""<div style='
                             font-size: 20px; 
                             padding-left: 420px; 
@@ -64,7 +69,7 @@ def plot_loader(TICKER, data):
                             >{int(data_.loc[TICKER]['potential_risk'].round()):+d}%</span>
                             </div>""", 
                             unsafe_allow_html=True)
-
+    # Основной график
     with left:
         forecast_filtered = forecast[(forecast['ds'] >= '2022-02-20') 
                                 & (forecast['ds'] <= forecast['ds'].max())] # Покащываем последнюю часть линии прогноза
@@ -124,13 +129,14 @@ def plot_loader(TICKER, data):
         # Штрих-пунктир к последней предсказанной цене акции
         last_pred_price = forecast_filtered['yhat'].iloc[-1]
         last_predicted_date = forecast_filtered['ds'].max()
+        # Горизонтальная
         fig3.add_shape(type="line",
                             x0=data['begin'].min(), y0=last_pred_price,
                             x1=forecast_filtered['ds'].max(), y1=last_pred_price,
                             opacity=0.5,  # Прозрачность
                             line=dict(color="grey", dash="dashdot"),
                             name='Последняя предсказанная цена')
-
+        # Вертилкальная
         fig3.add_shape(type="line",
                             x0=last_predicted_date, y0=0,
                             x1=last_predicted_date, y1=last_pred_price,
@@ -157,19 +163,14 @@ def plot_loader(TICKER, data):
                             )
         st.plotly_chart(fig3)
 
+# ВЫЗОВ ДАННЫХ ПРИ ВЫБОРЕ ТИКЕРА
 sums_data = pd.read_csv('export/streamlit/00_sums_data.csv')
 stock_list = sums_data.name.apply(lambda x: str(x).upper()).to_list()
-
 TICKER = st.sidebar.selectbox("Выберите строку для отображения графика:", stock_list)
-data, forecast, income, forcast_income, dividends, correlation_table = data_loader(TICKER)
+data, forecast, income, forcast_income, dividends, correlation_table, sums_data, stock_list  = data_loader(TICKER)
 
-# Исправляем данные
-correlation_table.index = correlation_table.index.str.rstrip(', млрд. руб.')
-correlation_table = correlation_table.iloc[:,:2] \
-                                    .rename(columns={'normalized_rmse':'RMSE_norm', 
-                                                     'Корреляция':'Чистая прибыль'}) \
-                                    .rename({'Операционный денежный поток':'Опер.ден.поток'})
-
+# Заголовок
+st.subheader('ПРОГНОЗИРОВАНИЕ СТОИМОСТИ')
 # Основной график
 plot_loader(TICKER, data)
 n_years = st.sidebar.slider('Горизонт планирования', 1, 365)
@@ -182,6 +183,7 @@ data.set_index('name', inplace=True)
 # Отображение DataFrame
 st.subheader('НАИБОЛЕЕ ЗНАЧИМЫЕ ФУНДАМЕНТАЛЬНЫЕ МЕТРИКИ')
 st.write('ПАРАМЕТРЫ РАСПОЛОЖЕНЫ ПО УБЫВАНИЮ ИХ КОРРЕЛЯЦИЯ С КАПИТАЛИЗАЦИЕЙ КОМПАНИИ И ИХ ПРОГНОЗИРУЕМОСТЬЮ')
+st.markdown('<hr>', unsafe_allow_html=True)
 left, right = st.columns([1, 1])
 
 # График прогноза по росту
@@ -216,6 +218,7 @@ left, right = st.columns([1, 1])
 # fig1.update_xaxes(side='top')
 # st.plotly_chart(fig1)
 
+# ТАБЛИЦА СУМАРНОЙ ИНФОРМАЦИИ ПО ПРОГНОЗАМ
 with right:
     st.write("")
     st.dataframe(data.drop(['date', 'predicted_date', 'lowest', 'highest', 'potential_yield_return'], axis=1) \
@@ -232,10 +235,9 @@ with right:
                                                axis=0, 
                                                subset=['%_change']),
                     width=700, height=None)
-    
+# ТЕПЛОВАЯ КАРТА С КОРРЕЛЯЦИЕЙ ФУНДАМЕНТАЛЬНЫХ МЕТРИК И КАПИТАЛИЗАЦИИ    
 with left:
     fig2, ax = plt.subplots(figsize=(7, 4), facecolor='none')
-    
     heatmap = sns.heatmap(correlation_table.iloc[:6], 
                             ax=ax, 
                             annot=True, 
@@ -249,26 +251,24 @@ with left:
     # Цвет и размер шрифта, осей x, y и графика
     ax.set_xticklabels(ax.get_xticklabels(), color='white', fontsize=6)
     ax.set_yticklabels(ax.get_yticklabels(), color='white', fontsize=7)
-
     cbar = heatmap.collections[0].colorbar
     cbar.ax.tick_params(colors='white', labelcolor='white', labelsize=4)
 
-    # Отображаем фигуру в Streamlit
+    st.pyplot(fig2) # Отображаем фигуру в Streamlit
     
-    st.pyplot(fig2)
+st.markdown('<hr>', unsafe_allow_html=True)
 
-num_displayed = st.slider("Select number of items to display", 1, 10)
-# Вывод DataFrame с выравниванием по центру для колонки "Дивиденд"
+# ВЫВОД ДИВИДЕНДНОЙ ИСТОРИИ
 st.sidebar.header('ИСТОРИЯ ДИВИДЕНДОВ')
 dividends.iloc[:,:2] = dividends.iloc[:,:2].applymap(lambda x: pd.to_datetime(x).date())
 st.sidebar.dataframe(dividends.set_index('Объяв. див.') \
                 .head(10).style.format({'Дивиденд': '{:^10.2f}'}),
                 width=280, height=None)
-
+# ВЫВЕДЕМ ДОП МЕТРИКИ PE РЯДОМ С ГРАФИКОМ ПРОГНОЗА ДОХОДА
 def income_loader(TICKER, forecast, income):
     left, right = st.columns([3, 2])
     with right:
-                # Значения PE рядом с графиком 
+                # Значения PE рядом с графиком - P/E при будущих доходах и текущей цене
                 st.markdown(f"""<div style='font-size: 20px; 
                             padding-left: 300px; 
                             text-align: left;
@@ -277,16 +277,17 @@ def income_loader(TICKER, forecast, income):
                             padding-left: 30px;
                             '>{np.round(income['Капитализация, млрд руб'].iloc[-1] / (forcast_income.iloc[-4:].yhat.sum()),2):.2f}</span></div>""", 
                             unsafe_allow_html=True)
+                # Значения PE рядом с графиком - P/E при текущей цене акции и доходе
                 st.markdown(f"""<div style='font-size: 20px; 
                             padding-left: 300px; 
                             text-align: left;
-                            '>P/E при оценке текущей цене акции и доходе P/E<span 
+                            '>P/E при текущей цене акции и доходе P/E<span 
                             style='font-size: 100px;padding-left: 20px;
                             '>{np.round(income['Капитализация, млрд руб']
                             .iloc[-1]/income.y.iloc[-4:]
                             .sum()):.2f}</span></div>""", 
                             unsafe_allow_html=True)
-
+    # График прогноза дохода
     with left:    
         fig4 = go.Figure(data=[
             # Предсказанные значения
@@ -304,6 +305,7 @@ def income_loader(TICKER, forecast, income):
                 name='Факт. знач.',
                 marker=dict(color='rgba(82, 126, 233, 0.8)'),
             ),
+            # Врехняя граница прогноза
             go.Scatter(
                 x=forecast['ds'], 
                 y=forecast['yhat_upper'], 
@@ -313,6 +315,7 @@ def income_loader(TICKER, forecast, income):
                 fillcolor='rgba(186, 191, 204, 0.05)', 
                 line=dict(color='rgba(186, 191, 204, 0.1)')
             ),
+            # Нижняя граница прогноза
             go.Scatter(
                 x=forecast['ds'], 
                 y=forecast['yhat_lower'],
@@ -323,7 +326,7 @@ def income_loader(TICKER, forecast, income):
                 line=dict(color='rgba(186, 191, 204, 0.1)')
             )
         ])
-        
+        # Общие настройки размера и подпись осей
         fig4.update_layout(
                 title=dict(text='Прогноз дохода комании', font=dict(size=30)),
                 xaxis_title='Дата',
@@ -332,17 +335,16 @@ def income_loader(TICKER, forecast, income):
                 width=1150,
                 xaxis_rangeslider_visible=True
         ) 
-
+        # Фильтр отображения прогнозной части
         fig4.update_yaxes(
                 range=[forecast['yhat'].min()-50, 
                         max(max(income['y']), 
                         forecast['yhat'].max()+50)]
         )
         
+        # Добавление горизонтальной линии к последнему предсказанному значению
         last_predicted_price = forecast['yhat'].iloc[-1]
         last_predicted_date = forecast['ds'].max()
-
-        # Добавление горизонтальной линии к последней предсказанной цене акции
         fig4.add_shape(type="line",
                 x0=income['ds'].min(), 
                 y0=last_predicted_price,
@@ -352,7 +354,7 @@ def income_loader(TICKER, forecast, income):
                 line=dict(color="grey", dash="dashdot"),
                 name='Последняя предсказанная цена'
                         )
-
+        # Добавление горизонтальной линии к последнему предсказанному значению
         fig4.add_shape(
                 type="line",
                 x0=last_predicted_date, 
@@ -363,7 +365,7 @@ def income_loader(TICKER, forecast, income):
                 opacity=0.5,  # Прозрачность
                 name='Последняя дата предсказания'
         )
-        
+        # Бирка на графике с резульатами в последний день прогноза
         fig4.add_annotation(
                 x=last_predicted_date,
                 y=last_predicted_price,
