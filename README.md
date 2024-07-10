@@ -49,12 +49,12 @@
 - `README.md`: Описание проекта и инструкции.
 
 ### Используемые библиотеки
-- [Python](https://www.python.org/) анализа данных и предобработки
-- [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) веб-скрейпинга
-- [Pandas](https://pandas.pydata.org/) обработка и анализ данных
-- [Matplotlib](https://matplotlib.org/), [Plotly Express]() и [Seaborn](https://seaborn.pydata.org/) визуализация данных
-- [Prophet](https://facebook.github.io/prophet/) для прогнозирования временных рядов
-- [Streamlit](https://streamlit.io/) для создания веб-приложения (если используется)
+> - [python](https://www.python.org/) анализа данных и предобработки
+> - [beautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) веб-скрейпинга
+> - [pandas](https://pandas.pydata.org/) обработка и анализ данных
+> - [matplotlib](https://matplotlib.org/), [Plotly Express]() и [Seaborn](https://seaborn.pydata.org/) визуализация данных
+> - [prophet](https://facebook.github.io/prophet/) для прогнозирования временных рядов
+> - [streamlit](https://streamlit.io/) для создания веб-приложения (если используется)
 
 ### Установка и запуск:
 1. Склонируйте репозиторий:
